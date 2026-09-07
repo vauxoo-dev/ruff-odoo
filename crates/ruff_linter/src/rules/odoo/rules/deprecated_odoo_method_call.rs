@@ -8,7 +8,8 @@ use crate::checkers::ast::Checker;
 use std::path::Path;
 
 use crate::rules::odoo::helpers::{
-    is_odoo_model_class, is_structural_non_code_file, odoo_version_applies,
+    RECORDSET_PASSTHROUGH_METHODS, is_odoo_model_class, is_structural_non_code_file,
+    odoo_version_applies,
 };
 use crate::rules::odoo::settings::OdooVersion;
 use crate::{Edit, Fix, FixAvailability};
@@ -194,6 +195,11 @@ const DEPRECATED_ORM_METHODS: &[DeprecatedMethod] = &[
 
 /// Returns `true` if `expr` is an `<anything>.env["model.name"]` subscript, or a chain of
 /// recordset-preserving calls on one, as in `request.env["res.partner"].sudo()`.
+///
+/// Only the names in [`RECORDSET_PASSTHROUGH_METHODS`] continue the chain, which is the same
+/// list `no-search-all` walks. What any other method returns cannot be inferred from a
+/// single file, so `request.env["ir.config_parameter"].get_param("k")` is a string as far as
+/// this rule is concerned and whatever is called on it proves nothing.
 fn is_environment_subscript(expr: &Expr) -> bool {
     match expr {
         Expr::Subscript(ast::ExprSubscript { value, .. }) => matches!(
@@ -202,7 +208,9 @@ fn is_environment_subscript(expr: &Expr) -> bool {
         ),
         Expr::Call(ast::ExprCall { func, .. }) => matches!(
             func.as_ref(),
-            Expr::Attribute(ast::ExprAttribute { value, .. }) if is_environment_subscript(value)
+            Expr::Attribute(ast::ExprAttribute { value, attr, .. })
+                if RECORDSET_PASSTHROUGH_METHODS.contains(&attr.as_str())
+                    && is_environment_subscript(value)
         ),
         _ => false,
     }

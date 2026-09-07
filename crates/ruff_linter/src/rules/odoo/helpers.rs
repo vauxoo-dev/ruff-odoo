@@ -234,6 +234,23 @@ const ODOO_STRUCTURAL_NON_CODE_DIRS: [&str; 3] = ["tests", "migrations", "upgrad
 /// they only ever narrow the file-level signal, never stand in for it.
 const ODOO_CONTROLLER_DIRS: [&str; 2] = ["controller", "controllers"];
 
+/// The ORM methods that hand back the same recordset they were called on, so the model
+/// survives them and `self.env["account.move"].sudo().search([])` still runs against
+/// `account.move`.
+///
+/// The list is closed on purpose. What any other method returns cannot be inferred from a
+/// single file — `get_param` yields a string, `mapped` yields whatever the field holds, a
+/// custom method yields anything at all — so a chain through an unlisted name stops being a
+/// recordset as far as the linter is concerned.
+pub(crate) const RECORDSET_PASSTHROUGH_METHODS: &[&str] = &[
+    "exists",
+    "sudo",
+    "with_company",
+    "with_context",
+    "with_env",
+    "with_user",
+];
+
 /// The directory holding the `__manifest__.py` (or legacy `__openerp__.py`) that `path`
 /// belongs to, walking up from the file.
 ///

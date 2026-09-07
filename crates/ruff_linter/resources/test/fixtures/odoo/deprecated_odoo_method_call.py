@@ -53,5 +53,9 @@ class MyController(WebsiteSale):
     def values(self):
         # Reported: the `env[...]` subscript proves the receiver is a recordset.
         request.env["res.partner"].check_access_rights("read")
+        # Reported: `sudo` hands back the same recordset, so the chain survives it.
+        request.env["res.partner"].sudo().with_context(lang="es").check_access_rights("read")
+        # Not reported: `get_param` returns a string, and nothing here can know otherwise.
+        request.env["ir.config_parameter"].get_param("k").check_access_rights("read")
         # Not reported: a plain local in a controller proves nothing.
         worksheet.check_access_rights("read")

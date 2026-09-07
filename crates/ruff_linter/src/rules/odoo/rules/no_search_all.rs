@@ -9,7 +9,9 @@ use crate::Violation;
 use crate::checkers::ast::Checker;
 use std::path::Path;
 
-use crate::rules::odoo::helpers::{is_odoo_model_class, is_structural_non_code_file};
+use crate::rules::odoo::helpers::{
+    RECORDSET_PASSTHROUGH_METHODS, is_odoo_model_class, is_structural_non_code_file,
+};
 
 /// ## What it does
 /// Checks for `search([])`/`search_read([])` calls with an empty domain and no `limit` on a
@@ -137,17 +139,6 @@ const HEAVY_MODELS: &[&str] = &[
     "survey.user_input*",
     "website.track",
     "website.visitor",
-];
-
-/// The methods that hand back the same recordset they are called on, so the model survives
-/// them.
-const RECORDSET_PASSTHROUGH_METHODS: &[&str] = &[
-    "exists",
-    "sudo",
-    "with_company",
-    "with_context",
-    "with_env",
-    "with_user",
 ];
 
 /// ODW8163

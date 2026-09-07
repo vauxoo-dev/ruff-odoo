@@ -138,6 +138,17 @@ ODW8502 `check_access_rights` is deprecated since Odoo 18.0. Use `check_access` 
 54 |         # Reported: the `env[...]` subscript proves the receiver is a recordset.
 55 |         request.env["res.partner"].check_access_rights("read")
    |                                    ^^^^^^^^^^^^^^^^^^^
-56 |         # Not reported: a plain local in a controller proves nothing.
-57 |         worksheet.check_access_rights("read")
+56 |         # Reported: `sudo` hands back the same recordset, so the chain survives it.
+57 |         request.env["res.partner"].sudo().with_context(lang="es").check_access_rights("read")
+   |
+
+ODW8502 `check_access_rights` is deprecated since Odoo 18.0. Use `check_access` instead, or `has_access` where a boolean is needed; an override belongs in `_check_access`.
+  --> deprecated_odoo_method_call.py:57:67
+   |
+55 |         request.env["res.partner"].check_access_rights("read")
+56 |         # Reported: `sudo` hands back the same recordset, so the chain survives it.
+57 |         request.env["res.partner"].sudo().with_context(lang="es").check_access_rights("read")
+   |                                                                   ^^^^^^^^^^^^^^^^^^^
+58 |         # Not reported: `get_param` returns a string, and nothing here can know otherwise.
+59 |         request.env["ir.config_parameter"].get_param("k").check_access_rights("read")
    |
