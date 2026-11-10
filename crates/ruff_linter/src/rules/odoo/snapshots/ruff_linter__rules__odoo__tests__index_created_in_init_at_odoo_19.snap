@@ -1,0 +1,131 @@
+---
+source: crates/ruff_linter/src/rules/odoo/mod.rs
+---
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:12:9
+   |
+10 |           super().init()
+11 |           # ODW9507: every part of the call is a literal.
+12 | /         tools.create_index(
+13 | |             self.env.cr,
+14 | |             "index_function_literal_ref_idx",
+15 | |             self._table,
+16 | |             ["ref"],
+17 | |             where="ref IS NOT NULL",
+18 | |         )
+   | |_________^
+19 |           # ODW9507: a literal table, keywords, an expression list and a method.
+20 |           tools.create_index(
+   |
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:20:9
+   |
+18 |           )
+19 |           # ODW9507: a literal table, keywords, an expression list and a method.
+20 | /         tools.create_index(
+21 | |             self._cr,
+22 | |             indexname="index_function_literal_name_gin",
+23 | |             tablename="index_function_literal",
+24 | |             expressions=["name gin_trgm_ops"],
+25 | |             method="gin",
+26 | |         )
+   | |_________^
+27 |           # ODW9507: imported by name, a unique index.
+28 |           create_index(self.env.cr, "index_function_literal_code", self._table, ("code",), unique=True)
+   |
+
+ODW9507 Index created in `init`, declare it with `models.UniqueIndex` on the model since Odoo 19.0
+  --> index_created_in_init.py:28:9
+   |
+26 |         )
+27 |         # ODW9507: imported by name, a unique index.
+28 |         create_index(self.env.cr, "index_function_literal_code", self._table, ("code",), unique=True)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+29 |         # ODW9507: the deprecated spelling of a unique index.
+30 |         odoo_sql.create_unique_index(self.env.cr, "index_function_literal_uniq", self._table, ["a", "b"])
+   |
+
+ODW9507 Index created in `init`, declare it with `models.UniqueIndex` on the model since Odoo 19.0
+  --> index_created_in_init.py:30:9
+   |
+28 |         create_index(self.env.cr, "index_function_literal_code", self._table, ("code",), unique=True)
+29 |         # ODW9507: the deprecated spelling of a unique index.
+30 |         odoo_sql.create_unique_index(self.env.cr, "index_function_literal_uniq", self._table, ["a", "b"])
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:38:9
+   |
+36 |     def init(self):
+37 |         # ODW9507: plain SQL on the model's own table.
+38 |         self.env.cr.execute("CREATE INDEX IF NOT EXISTS index_sql_partner_idx ON index_sql (partner_id)")
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |         # ODW9507: unique, lower case, trailing semicolon.
+40 |         self._cr.execute("create unique index index_sql_code_uniq on index_sql (code);")
+   |
+
+ODW9507 Index created in `init`, declare it with `models.UniqueIndex` on the model since Odoo 19.0
+  --> index_created_in_init.py:40:9
+   |
+38 |         self.env.cr.execute("CREATE INDEX IF NOT EXISTS index_sql_partner_idx ON index_sql (partner_id)")
+39 |         # ODW9507: unique, lower case, trailing semicolon.
+40 |         self._cr.execute("create unique index index_sql_code_uniq on index_sql (code);")
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+41 |
+42 |     def _auto_init(self):
+   |
+
+ODW9507 Index created in `_auto_init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:45:9
+   |
+43 |           res = super()._auto_init()
+44 |           # ODW9507: `_auto_init` is reported as well.
+45 | /         self.env.cr.execute(
+46 | |             """
+47 | |             CREATE INDEX index_sql_state_idx
+48 | |                 ON index_sql USING btree (state)
+49 | |                 WHERE state = 'draft'
+50 | |             """
+51 | |         )
+   | |_________^
+52 |           return res
+   |
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:61:9
+   |
+59 |         super().init()
+60 |         # ODW9507: the table comes from the single `_inherit`.
+61 |         self.env.cr.execute("CREATE INDEX res_partner_ref_idx ON res_partner (ref)")
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+62 |         # ODW9507: `self._table` needs no table name.
+63 |         tools.create_index(self.env.cr, "res_partner_x_idx", self._table, ["x_ref"])
+   |
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:63:9
+   |
+61 |         self.env.cr.execute("CREATE INDEX res_partner_ref_idx ON res_partner (ref)")
+62 |         # ODW9507: `self._table` needs no table name.
+63 |         tools.create_index(self.env.cr, "res_partner_x_idx", self._table, ["x_ref"])
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+  --> index_created_in_init.py:72:9
+   |
+70 |     def init(self):
+71 |         # ODW9507: `_table` wins over `_name`.
+72 |         self.env.cr.execute("CREATE INDEX custom_table_idx ON custom_table (a)")
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+73 |         # Not reported: `_name` would give another table.
+74 |         self.env.cr.execute("CREATE INDEX index_custom_table_idx ON index_custom_table (a)")
+   |
+
+ODW9507 Index created in `init`, declare it with `models.Index` on the model since Odoo 19.0
+   --> index_created_in_init.py:170:9
+    |
+168 |         self.env.cr.execute("CREATE INDEX res_partner_idx ON res_partner (a)")
+169 |         # ODW9507: `self._table` is always the model's own.
+170 |         tools.create_index(self.env.cr, "res_partner_self_idx", self._table, ["a"])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

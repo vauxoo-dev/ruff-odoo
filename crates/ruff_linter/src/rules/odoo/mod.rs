@@ -426,6 +426,26 @@ mod tests {
         Ok(())
     }
 
+    /// `models.Index` exists from Odoo 19.0 on, so the rule needs the version to say so.
+    #[test_case(Some((19, 0)), "index_created_in_init_at_odoo_19")]
+    #[test_case(Some((18, 0)), "index_created_in_init_suppressed_before_odoo_19")]
+    #[test_case(None, "index_created_in_init_needs_odoo_version")]
+    fn index_created_in_init_by_version(version: Option<(u16, u16)>, snapshot: &str) -> Result<()> {
+        let diagnostics = test_path(
+            Path::new("odoo/index_created_in_init.py"),
+            &LinterSettings {
+                odoo: super::settings::Settings {
+                    odoo_version: version
+                        .map(|(major, minor)| super::settings::OdooVersion::new(major, minor)),
+                    ..super::settings::Settings::default()
+                },
+                ..LinterSettings::for_rule(Rule::IndexCreatedInInit)
+            },
+        )?;
+        assert_diagnostics!(snapshot.to_string(), diagnostics);
+        Ok(())
+    }
+
     /// The log and the constant a falsy scalar becomes are Odoo 19.0 behaviour.
     #[test]
     fn scalar_in_domain_suppressed_before_odoo_19() -> Result<()> {
